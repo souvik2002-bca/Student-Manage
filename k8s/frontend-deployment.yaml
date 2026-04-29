@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sms-frontend
+  labels:
+    app: sms-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: sms-frontend
+  template:
+    metadata:
+      labels:
+        app: sms-frontend
+    spec:
+      containers:
+      - name: sms-frontend
+        image: <YOUR_AWS_ACCOUNT_ID>.dkr.ecr.<YOUR_REGION>.amazonaws.com/sms-frontend:latest
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+          requests:
+            memory: "128Mi"
+            cpu: "100m"

@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SMS Documentation</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:#0f172a;color:#fff;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+#nav{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background:#1e293b;border-bottom:1px solid #334155}
+#nav button{background:#3b82f6;color:#fff;border:none;padding:8px 20px;border-radius:6px;cursor:pointer;font-size:14px}
+#nav button:hover{background:#2563eb}
+#nav button:disabled{background:#475569;cursor:not-allowed}
+#counter{color:#94a3b8;font-size:14px}
+#viewer{flex:1;display:flex;align-items:center;justify-content:center;padding:20px}
+.slide{width:960px;min-height:540px;border-radius:12px;overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,0.5);position:relative;display:none;animation:fadeIn .3s ease}
+.slide.active{display:flex;flex-direction:column}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* Cover */
+.cover{background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%);justify-content:center;align-items:center;text-align:center;padding:60px}
+.cover .top-bar{position:absolute;top:0;left:0;width:100%;height:6px;background:#3b82f6}
+.cover h1{font-size:48px;font-weight:800;line-height:1.2;color:#fff;margin-bottom:20px}
+.cover p{font-size:18px;color:#94a3b8}
+.cover .ver{margin-top:30px;font-size:13px;color:#64748b}
+
+/* Section divider */
+.section-div{background:#3b82f6;justify-content:center;align-items:center;text-align:center}
+.section-div h2{font-size:42px;font-weight:800;color:#fff}
+.section-div p{font-size:17px;color:#bfdbfe;margin-top:12px}
+
+/* Content slides */
+.content{background:#fff;color:#1e293b}
+.content .slide-header{background:#1e293b;padding:18px 30px}
+.content .slide-header h2{font-size:22px;font-weight:700;color:#fff}
+.content .body{padding:20px 30px;flex:1}
+
+/* Utilities */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.card{background:#f1f5f9;border-radius:10px;padding:14px;border-left:4px solid #3b82f6}
+.card.green{border-left-color:#10b981}
+.card.orange{border-left-color:#f59e0b}
+.card.purple{border-left-color:#7c3aed}
+.card.red{border-left-color:#ef4444}
+.card.cyan{border-left-color:#06b6d4}
+.card h3{font-size:13px;font-weight:700;color:#3b82f6;margin-bottom:6px}
+.card.green h3{color:#10b981}
+.card.orange h3{color:#f59e0b}
+.card.purple h3{color:#7c3aed}
+.card.red h3{color:#ef4444}
+.card.cyan h3{color:#06b6d4}
+.card p{font-size:11.5px;color:#475569;line-height:1.5}
+ul{list-style:none;padding:0}
+ul li{padding:6px 0;font-size:13px;color:#334155;border-bottom:1px solid #f1f5f9;display:flex;gap:8px}
+ul li::before{content:"▸";color:#3b82f6;flex-shrink:0}
+.row-item{background:#f1f5f9;border-radius:8px;padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.row-item .label{font-weight:700;color:#3b82f6;font-size:12px;min-width:130px}
+.row-item .val{font-size:12px;color:#334155}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;color:#fff;margin-right:5px}
+.bg-blue{background:#3b82f6}.bg-green{background:#10b981}.bg-orange{background:#f59e0b}.bg-purple{background:#7c3aed}
+.role-col{border-radius:10px;padding:14px;text-align:center}
+.role-col .role-head{font-size:15px;font-weight:800;color:#fff;padding:10px;border-radius:8px;margin-bottom:10px}
+.role-col li{font-size:11.5px;text-align:left;color:#334155}
+.arch-layer{border-radius:10px;padding:14px 20px;margin-bottom:10px}
+.arch-layer h3{font-size:15px;font-weight:700;color:#fff;margin-bottom:4px}
+.arch-layer p{font-size:12px;color:rgba(255,255,255,0.85)}
+.step-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.step{background:#f1f5f9;border-radius:8px;padding:12px;display:flex;align-items:center;gap:10px}
+.step-num{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;flex-shrink:0}
+.step p{font-size:11.5px;color:#334155}
+.intro-text{font-size:13px;color:#64748b;margin-bottom:16px;line-height:1.6}
+.cred-row{background:#f1f5f9;border-radius:10px;margin-bottom:12px;display:flex;overflow:hidden}
+.cred-side{width:90px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;padding:10px}
+.cred-body{padding:12px 16px;flex:1}
+.cred-body .u{font-size:13px;font-weight:700;color:#1e293b}
+.cred-body .p{font-size:12px;color:#475569;margin-top:3px}
+.cred-body .n{font-size:11px;color:#94a3b8;margin-top:5px;font-style:italic}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:#1e293b;color:#fff;padding:8px 10px;text-align:left}
+td{padding:7px 10px;border-bottom:1px solid #e2e8f0;color:#334155}
+tr:nth-child(even) td{background:#f8fafc}
+.method{padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;color:#fff}
+.thank{background:linear-gradient(135deg,#1e293b,#0f172a);justify-content:center;align-items:center;text-align:center;padding:60px}
+.thank h1{font-size:52px;font-weight:800;color:#fff;margin-bottom:16px}
+.thank p{font-size:16px;color:#94a3b8}
+.thank .stack{margin-top:30px;font-size:13px;color:#64748b}
+</style>
+</head>
+<body>
+<div id="nav">
+  <button id="prev" onclick="go(-1)" disabled>← Prev</button>
+  <span id="counter">Slide 1 / 15</span>
+  <button id="next" onclick="go(1)">Next →</button>
+</div>
+<div id="viewer">
+
+<!-- SLIDE 1: Cover -->
+<div class="slide cover active">
+  <div class="top-bar"></div>
+  <h1>Student Management<br>System</h1>
+  <p>Complete MERN Stack Application Documentation</p>
+  <div class="ver">Version 1.0 &nbsp;•&nbsp; 2025</div>
+</div>
+
+<!-- SLIDE 2: TOC -->
+<div class="slide content">
+  <div class="slide-header"><h2>Table of Contents</h2></div>
+  <div class="body grid2">
+    <ul>
+      <li>01 &nbsp; Project Overview</li>
+      <li>02 &nbsp; Technology Stack</li>
+      <li>03 &nbsp; System Architecture</li>
+      <li>04 &nbsp; Database Models</li>
+      <li>05 &nbsp; User Roles &amp; Access</li>
+      <li>06 &nbsp; Admin Module</li>
+      <li>07 &nbsp; Teacher Module</li>
+    </ul>
+    <ul>
+      <li>08 &nbsp; Student Module</li>
+      <li>09 &nbsp; REST API Endpoints</li>
+      <li>10 &nbsp; Authentication Flow</li>
+      <li>11 &nbsp; Deployment Guide</li>
+      <li>12 &nbsp; Login Credentials</li>
+      <li>13 &nbsp; Thank You</li>
+    </ul>
+  </div>
+</div>
+
+<!-- SLIDE 3: Overview Section -->
+<div class="slide section-div">
+  <h2>01 — Project Overview</h2>
+  <p>What is this system?</p>
+</div>
+
+<!-- SLIDE 4: Overview Content -->
+<div class="slide content">
+  <div class="slide-header"><h2>Project Overview</h2></div>
+  <div class="body">
+    <p class="intro-text">The Student Management System (SMS) is a full-stack web application built on the MERN stack that digitizes all core academic operations for an educational institution.</p>
+    <ul>
+      <li>Centralized management of students, teachers, courses &amp; subjects</li>
+      <li>Role-based dashboards for Admin, Teacher, and Student</li>
+      <li>Attendance tracking with daily mark/view workflows</li>
+      <li>Marks upload, grading &amp; result reports per subject</li>
+      <li>Fee collection tracking with payment status management</li>
+      <li>Student ID Card generation with QR code (printable)</li>
+      <li>JWT-secured REST API backend with bcrypt password hashing</li>
+    </ul>
+  </div>
+</div>
+
+<!-- SLIDE 5: Tech Stack -->
+<div class="slide content">
+  <div class="slide-header"><h2>Technology Stack</h2></div>
+  <div class="body grid2">
+    <div class="card green"><h3>MongoDB</h3><p>NoSQL database — stores all data in JSON-like documents. 8 collections.</p></div>
+    <div class="card"><h3>Express.js</h3><p>Node.js web framework — handles REST API routing &amp; middleware chain.</p></div>
+    <div class="card orange"><h3>React 18</h3><p>Frontend SPA — hooks, context API, React Router v6, Vite dev server.</p></div>
+    <div class="card purple"><h3>Node.js</h3><p>JavaScript runtime — runs the backend server on port 5000.</p></div>
+    <div class="card cyan"><h3>JWT Auth</h3><p>JSON Web Tokens — stateless authentication with 7-day expiry.</p></div>
+    <div class="card red"><h3>bcryptjs</h3><p>Password hashing — all user passwords stored as bcrypt hashes (salt 12).</p></div>
+  </div>
+</div>
+
+<!-- SLIDE 6: Architecture -->
+<div class="slide content">
+  <div class="slide-header"><h2>System Architecture</h2></div>
+  <div class="body">
+    <div class="arch-layer" style="background:#3b82f6">
+      <h3>Presentation Layer</h3>
+      <p>React 18 SPA &nbsp;•&nbsp; Vite dev server &nbsp;•&nbsp; Axios HTTP client &nbsp;•&nbsp; React Router v6 &nbsp;•&nbsp; localhost:5173</p>
+    </div>
+    <div style="text-align:center;color:#64748b;font-size:20px;margin:2px 0">▼</div>
+    <div class="arch-layer" style="background:#10b981">
+      <h3>Business Logic Layer</h3>
+      <p>Express.js REST API &nbsp;•&nbsp; JWT Middleware &nbsp;•&nbsp; Role-based Authorization &nbsp;•&nbsp; bcrypt &nbsp;•&nbsp; localhost:5000</p>
+    </div>
+    <div style="text-align:center;color:#64748b;font-size:20px;margin:2px 0">▼</div>
+    <div class="arch-layer" style="background:#f59e0b">
+      <h3>Data Layer</h3>
+      <p>MongoDB (local) &nbsp;•&nbsp; Mongoose ODM &nbsp;•&nbsp; 8 collections &nbsp;•&nbsp; Pre-save hooks for password hashing</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: DB Models -->
+<div class="slide content">
+  <div class="slide-header"><h2>Database Models (8 Collections)</h2></div>
+  <div class="body grid2">
+    <div class="card"><h3>User</h3><p>name, email, username, password (hashed), role, isActive, avatar</p></div>
+    <div class="card green"><h3>Student</h3><p>rollNumber, dateOfBirth, gender, phone, address, course (ref), user (ref)</p></div>
+    <div class="card orange"><h3>Teacher</h3><p>employeeId, department, phone, subjects[] (ref), user (ref)</p></div>
+    <div class="card purple"><h3>Course</h3><p>name, code, duration, fee</p></div>
+    <div class="card cyan"><h3>Subject</h3><p>name, code, course (ref), teacher (ref), semester</p></div>
+    <div class="card red"><h3>Attendance</h3><p>student (ref), subject (ref), date, status (Present / Absent / Late)</p></div>
+    <div class="card"><h3>Result</h3><p>student (ref), subject (ref), marks, maxMarks, grade, remarks</p></div>
+    <div class="card green"><h3>Fee</h3><p>student (ref), amount, paidAmount, dueDate, status, semester</p></div>
+  </div>
+</div>
+
+<!-- SLIDE 8: Roles -->
+<div class="slide content">
+  <div class="slide-header"><h2>User Roles &amp; Permissions</h2></div>
+  <div class="body grid3">
+    <div class="role-col" style="background:#f1f5f9">
+      <div class="role-head" style="background:#7c3aed">Admin</div>
+      <ul>
+        <li>Full system access</li>
+        <li>Manage Students &amp; Teachers</li>
+        <li>Manage Courses &amp; Subjects</li>
+        <li>View &amp; manage Fees</li>
+        <li>Attendance oversight</li>
+        <li>Result management</li>
+      </ul>
+    </div>
+    <div class="role-col" style="background:#f1f5f9">
+      <div class="role-head" style="background:#3b82f6">Teacher</div>
+      <ul>
+        <li>Mark daily attendance</li>
+        <li>Upload student marks</li>
+        <li>View student performance</li>
+        <li>View assigned subjects</li>
+      </ul>
+    </div>
+    <div class="role-col" style="background:#f1f5f9">
+      <div class="role-head" style="background:#10b981">Student</div>
+      <ul>
+        <li>View own attendance</li>
+        <li>View own results</li>
+        <li>View fee status</li>
+        <li>Download ID Card</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: Admin Module -->
+<div class="slide content">
+  <div class="slide-header"><h2>Admin Module</h2></div>
+  <div class="body">
+    <div class="row-item"><span class="label">Dashboard</span><span class="val">Real-time stats: total students, teachers, courses, recent fees, attendance summary</span></div>
+    <div class="row-item"><span class="label">Manage Students</span><span class="val">Add, edit, delete students. Assign courses. View full profiles with photo upload</span></div>
+    <div class="row-item"><span class="label">Manage Teachers</span><span class="val">Add, edit, delete teachers. Assign subjects. Track department info</span></div>
+    <div class="row-item"><span class="label">Manage Courses</span><span class="val">Create courses with duration and fee. Link subjects to courses</span></div>
+    <div class="row-item"><span class="label">Fee Management</span><span class="val">Track fee payments per student, mark as paid, view due amounts and pending status</span></div>
+    <div class="row-item"><span class="label">Attendance</span><span class="val">View attendance records across all students and subjects</span></div>
+    <div class="row-item"><span class="label">Results</span><span class="val">View &amp; manage uploaded marks and generated grades</span></div>
+  </div>
+</div>
+
+<!-- SLIDE 10: Teacher Module -->
+<div class="slide content">
+  <div class="slide-header"><h2>Teacher Module</h2></div>
+  <div class="body">
+    <div class="card" style="margin-bottom:12px"><h3>Dashboard</h3><p>Overview of assigned subjects, total students, today's pending attendance tasks and quick actions.</p></div>
+    <div class="card green" style="margin-bottom:12px"><h3>Mark Attendance</h3><p>Select subject &amp; date, mark each student as Present / Absent / Late, then submit for the day.</p></div>
+    <div class="card orange" style="margin-bottom:12px"><h3>Upload Marks</h3><p>Select subject &amp; student, enter obtained marks and max marks — system auto-calculates grade.</p></div>
+    <div class="card purple"><h3>Student Performance</h3><p>View attendance % and result summary per student for all assigned subjects.</p></div>
+  </div>
+</div>
+
+<!-- SLIDE 11: Student Module -->
+<div class="slide content">
+  <div class="slide-header"><h2>Student Module</h2></div>
+  <div class="body grid2">
+    <div class="card"><h3>Dashboard</h3><p>Personal overview: course info, attendance %, recent results, due fees at a glance.</p></div>
+    <div class="card green"><h3>My Attendance</h3><p>Subject-wise attendance with present/absent/late breakdown and overall percentage.</p></div>
+    <div class="card orange"><h3>My Results</h3><p>Subject-wise marks, grades (A+ to F), semester-wise result history and GPA.</p></div>
+    <div class="card red"><h3>My Fees</h3><p>Current fee status, amount paid, due date, and outstanding balance per semester.</p></div>
+    <div class="card purple" style="grid-column:1/-1"><h3>ID Card</h3><p>Auto-generated student ID card with photo, roll number, course &amp; QR code. Fully printable.</p></div>
+  </div>
+</div>
+
+<!-- SLIDE 12: API Endpoints -->
+<div class="slide content">
+  <div class="slide-header"><h2>REST API Endpoints</h2></div>
+  <div class="body">
+    <table>
+      <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+      <tr><td><span class="method bg-green">POST</span></td><td>/api/auth/login</td><td>Authenticate user, returns JWT token</td></tr>
+      <tr><td><span class="method bg-blue">GET</span></td><td>/api/auth/me</td><td>Get current logged-in user profile</td></tr>
+      <tr><td><span class="method bg-blue">GET/POST/PUT/DELETE</span></td><td>/api/students</td><td>CRUD operations for student records</td></tr>
+      <tr><td><span class="method bg-blue">GET/POST/PUT/DELETE</span></td><td>/api/teachers</td><td>CRUD operations for teacher records</td></tr>
+      <tr><td><span class="method bg-blue">GET/POST/PUT/DELETE</span></td><td>/api/courses</td><td>Manage courses and curriculum</td></tr>
+      <tr><td><span class="method bg-blue">GET/POST/PUT/DELETE</span></td><td>/api/subjects</td><td>Manage subjects per course</td></tr>
+      <tr><td><span class="method bg-green">GET/POST</span></td><td>/api/attendance</td><td>Mark and retrieve attendance records</td></tr>
+      <tr><td><span class="method bg-green">GET/POST</span></td><td>/api/results</td><td>Upload marks and retrieve result data</td></tr>
+      <tr><td><span class="method bg-orange">GET/POST/PUT</span></td><td>/api/fees</td><td>Fee tracking and payment status updates</td></tr>
+      <tr><td><span class="method bg-blue">GET</span></td><td>/api/dashboard</td><td>Aggregated stats for dashboard cards</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- SLIDE 13: Auth Flow -->
+<div class="slide content">
+  <div class="slide-header"><h2>Authentication Flow</h2></div>
+  <div class="body">
+    <div class="step-grid">
+      <div class="step"><div class="step-num" style="background:#3b82f6">1</div><p>User submits username &amp; password on Login Page</p></div>
+      <div class="step"><div class="step-num" style="background:#3b82f6">2</div><p>Frontend POSTs to /api/auth/login via Axios</p></div>
+      <div class="step"><div class="step-num" style="background:#10b981">3</div><p>Backend finds user by username, verifies bcrypt hash</p></div>
+      <div class="step"><div class="step-num" style="background:#10b981">4</div><p>JWT token signed with JWT_SECRET (7-day expiry)</p></div>
+      <div class="step"><div class="step-num" style="background:#f59e0b">5</div><p>Token stored in localStorage on client side</p></div>
+      <div class="step"><div class="step-num" style="background:#f59e0b">6</div><p>Axios interceptor injects Bearer token on every request</p></div>
+      <div class="step"><div class="step-num" style="background:#7c3aed">7</div><p>protect middleware verifies token on protected routes</p></div>
+      <div class="step"><div class="step-num" style="background:#7c3aed">8</div><p>authorize middleware checks role for restricted endpoints</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 14: Deployment -->
+<div class="slide content">
+  <div class="slide-header"><h2>Local Deployment Steps</h2></div>
+  <div class="body">
+    <div class="row-item"><span class="label">Prerequisites</span><span class="val">Node.js 18+, MongoDB running locally on port 27017</span></div>
+    <div class="row-item"><span class="label">Install Backend</span><span class="val" style="font-family:monospace;background:#1e293b;color:#86efac;padding:3px 8px;border-radius:4px">cd backend &amp;&amp; npm install</span></div>
+    <div class="row-item"><span class="label">Configure .env</span><span class="val">MONGO_URI, JWT_SECRET, PORT=5000 — already set in backend/.env</span></div>
+    <div class="row-item"><span class="label">Seed Database</span><span class="val" style="font-family:monospace;background:#1e293b;color:#86efac;padding:3px 8px;border-radius:4px">node resetAdmin.js</span></div>
+    <div class="row-item"><span class="label">Start Backend</span><span class="val" style="font-family:monospace;background:#1e293b;color:#86efac;padding:3px 8px;border-radius:4px">npm start → http://localhost:5000</span></div>
+    <div class="row-item"><span class="label">Install Frontend</span><span class="val" style="font-family:monospace;background:#1e293b;color:#86efac;padding:3px 8px;border-radius:4px">cd frontend &amp;&amp; npm install</span></div>
+    <div class="row-item"><span class="label">Start Frontend</span><span class="val" style="font-family:monospace;background:#1e293b;color:#86efac;padding:3px 8px;border-radius:4px">npm run dev → http://localhost:5173</span></div>
+  </div>
+</div>
+
+<!-- SLIDE 15: Credentials -->
+<div class="slide content">
+  <div class="slide-header"><h2>Default Login Credentials</h2></div>
+  <div class="body">
+    <p class="intro-text">After running <code style="background:#f1f5f9;padding:2px 6px;border-radius:4px">node resetAdmin.js</code>, use these credentials:</p>
+    <div class="cred-row">
+      <div class="cred-side" style="background:#7c3aed">Admin</div>
+      <div class="cred-body">
+        <div class="u">Username: admin &nbsp;&nbsp; Password: Admin@1234</div>
+        <div class="n">Full system access. Create teachers/students from this account.</div>
+      </div>
+    </div>
+    <div class="cred-row">
+      <div class="cred-side" style="background:#3b82f6">Teacher</div>
+      <div class="cred-body">
+        <div class="u">Username: Set by Admin &nbsp;&nbsp; Password: Set by Admin</div>
+        <div class="n">Admin creates teacher accounts. Login with assigned username &amp; password.</div>
+      </div>
+    </div>
+    <div class="cred-row">
+      <div class="cred-side" style="background:#10b981">Student</div>
+      <div class="cred-body">
+        <div class="u">Username: Set by Admin &nbsp;&nbsp; Password: Set by Admin</div>
+        <div class="n">Admin creates student accounts. Login with roll number or username.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 16: Thank You -->
+<div class="slide thank">
+  <h1>Thank You</h1>
+  <p>Student Management System — Complete Documentation</p>
+  <div class="stack">Built with ❤️ using MongoDB · Express · React · Node.js</div>
+</div>
+
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+let cur = 0;
+const total = slides.length;
+document.getElementById('counter').textContent = `Slide 1 / ${total}`;
+
+function go(dir) {
+  slides[cur].classList.remove('active');
+  cur = Math.max(0, Math.min(total - 1, cur + dir));
+  slides[cur].classList.add('active');
+  document.getElementById('counter').textContent = `Slide ${cur + 1} / ${total}`;
+  document.getElementById('prev').disabled = cur === 0;
+  document.getElementById('next').disabled = cur === total - 1;
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(1);
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') go(-1);
+});
+</script>
+</body>
+</html>
