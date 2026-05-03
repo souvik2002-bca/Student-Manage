@@ -3,8 +3,8 @@ const jwt = require('jsonwebtoken');
 const Student = require('../models/Student');
 const Teacher = require('../models/Teacher');
 
-const signToken = (id) =>
-  jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE });
+const signToken = (id, role) =>
+  jwt.sign({ id , role }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE });
 
 // @POST /api/auth/login
 exports.login = async (req, res) => {
@@ -19,7 +19,7 @@ exports.login = async (req, res) => {
   if (!user.isActive)
     return res.status(403).json({ success: false, message: 'Account is disabled' });
 
-  const token = signToken(user._id);
+  const token = signToken(user._id , user.role);
 
   // Get extra profile info
   let profileId = null;
