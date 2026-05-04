@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: sms-frontend
-        image: <YOUR_AWS_ACCOUNT_ID>.dkr.ecr.<YOUR_REGION>.amazonaws.com/sms-frontend:latest
+        image: 371104899767.dkr.ecr.ap-south-1.amazonaws.com/sms-frontend:latest
         ports:
         - containerPort: 80
         resources:

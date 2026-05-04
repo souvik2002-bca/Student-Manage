@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: sms-backend
-        image: <YOUR_AWS_ACCOUNT_ID>.dkr.ecr.<YOUR_REGION>.amazonaws.com/sms-backend:latest
+        image: 371104899767.dkr.ecr.ap-south-1.amazonaws.com/sms-backend:latest 
         ports:
         - containerPort: 5000
         envFrom:

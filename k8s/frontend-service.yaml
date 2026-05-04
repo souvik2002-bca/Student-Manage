@@ -3,10 +3,9 @@ kind: Service
 metadata:
   name: sms-frontend-service
 spec:
+  type: LoadBalancer
   selector:
     app: sms-frontend
   ports:
-    - protocol: TCP
-      port: 80
+    - port: 80
       targetPort: 80
-  type: ClusterIP
