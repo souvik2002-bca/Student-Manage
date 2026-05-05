@@ -4,7 +4,7 @@ const Student = require('../models/Student');
 const Teacher = require('../models/Teacher');
 
 const signToken = (id, role) =>
-  jwt.sign({ id , role }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE });
+  jwt.sign({ id, role }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
 // @POST /api/auth/login
 exports.login = async (req, res) => {
