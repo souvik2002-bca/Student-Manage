@@ -1,29 +1,46 @@
-name: Deploy App
+name: Auto Deploy MERN
 
 on:
   push:
     branches: ["main"]
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v3
 
-    - name: Docker login
-      run: docker login -u ${{ secrets.USERNAME }} -p ${{ secrets.PASSWORD }}
+    - name: Docker Login
+      run: echo "${{ secrets.PASSWORD }}" | docker login -u "${{ secrets.USERNAME }}" --password-stdin
 
-    - name: Build & Push
-      run: |
-        docker build -t yourusername/backend ./backend
-        docker push yourusername/backend
+    - name: Build Backend
+      run: docker build -t ${{ secrets.USERNAME }}/backend ./backend
+
+    - name: Push Backend
+      run: docker push ${{ secrets.USERNAME }}/backend
+
+    - name: Build Frontend
+      run: docker build -t ${{ secrets.USERNAME }}/frontend ./frontend
+
+    - name: Push Frontend
+      run: docker push ${{ secrets.USERNAME }}/frontend
 
     - name: Deploy to EC2
-      run: |
-        ssh ubuntu@your-ip "
-        docker pull yourusername/backend &&
-        docker stop backend || true &&
-        docker rm backend || true &&
-        docker run -d -p 5000:5000 --name backend yourusername/backend
-        "
+      uses: appleboy/ssh-action@v0.1.10
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_KEY }}
+        script: |
+          docker pull ${{ secrets.USERNAME }}/backend
+          docker pull ${{ secrets.USERNAME }}/frontend
+
+          docker stop backend || true
+          docker rm backend || true
+
+          docker stop frontend || true
+          docker rm frontend || true
+
+          docker run -d -p 5000:5000 --name backend ${{ secrets.USERNAME }}/backend
+          docker run -d -p 80:80 --name frontend ${{ secrets.USERNAME }}/frontend
