@@ -1,46 +1,26 @@
-name: Auto Deploy MERN
+- name: Deploy to EC2
+  uses: appleboy/ssh-action@v0.1.10
+  with:
+    host: ${{ secrets.EC2_HOST }}
+    username: ${{ secrets.EC2_USER }}
+    key: ${{ secrets.EC2_KEY }}
+    script: |
+      docker pull ${{ secrets.USERNAME }}/backend
+      docker pull ${{ secrets.USERNAME }}/frontend
 
-on:
-  push:
-    branches: ["main"]
+      docker stop backend || true
+      docker rm backend || true
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
+      docker stop frontend || true
+      docker rm frontend || true
 
-    steps:
-    - uses: actions/checkout@v3
+      docker run -d -p 5000:5000 \
+      --name backend \
+      -e MONGO_URI=${{ secrets.MONGO_URI }} \
+      -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
+      -e JWT_EXPIRE=${{ secrets.JWT_EXPIRE }} \
+      ${{ secrets.USERNAME }}/backend
 
-    - name: Docker Login
-      run: echo "${{ secrets.PASSWORD }}" | docker login -u "${{ secrets.USERNAME }}" --password-stdin
-
-    - name: Build Backend
-      run: docker build -t ${{ secrets.USERNAME }}/backend ./backend
-
-    - name: Push Backend
-      run: docker push ${{ secrets.USERNAME }}/backend
-
-    - name: Build Frontend
-      run: docker build -t ${{ secrets.USERNAME }}/frontend ./frontend
-
-    - name: Push Frontend
-      run: docker push ${{ secrets.USERNAME }}/frontend
-
-    - name: Deploy to EC2
-      uses: appleboy/ssh-action@v0.1.10
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ${{ secrets.EC2_USER }}
-        key: ${{ secrets.EC2_KEY }}
-        script: |
-          docker pull ${{ secrets.USERNAME }}/backend
-          docker pull ${{ secrets.USERNAME }}/frontend
-
-          docker stop backend || true
-          docker rm backend || true
-
-          docker stop frontend || true
-          docker rm frontend || true
-
-          docker run -d -p 5000:5000 --name backend ${{ secrets.USERNAME }}/backend
-          docker run -d -p 80:80 --name frontend ${{ secrets.USERNAME }}/frontend
+      docker run -d -p 80:80 \
+      --name frontend \
+      ${{ secrets.USERNAME }}/frontend
