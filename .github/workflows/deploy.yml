@@ -1,53 +1,29 @@
-name: Deploy to EKS
+name: Deploy App
 
 on:
   push:
-    branches:
-      - main
+    branches: ["main"]
 
-env:
-  AWS_REGION: ap-south-1
-  AWS_ACCOUNT_ID: 371104899767
-  EKS_CLUSTER_NAME: mern-cluster
-    
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    - uses: actions/checkout@v3
 
-      - name: Configure AWS
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+    - name: Docker login
+      run: docker login -u ${{ secrets.USERNAME }} -p ${{ secrets.PASSWORD }}
 
-      - name: Login to ECR
-        run: |
-          aws ecr get-login-password --region $AWS_REGION | \
-          docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+    - name: Build & Push
+      run: |
+        docker build -t yourusername/backend ./backend
+        docker push yourusername/backend
 
-      - name: Build & Push Backend
-        run: |
-          docker build -t sms-backend ./backend
-          docker tag sms-backend:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/sms-backend:latest
-          docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/sms-backend:latest
-
-      - name: Build & Push Frontend
-        run: |
-          docker build -t sms-frontend ./frontend
-          docker tag sms-frontend:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/sms-frontend:latest
-          docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/sms-frontend:latest
-
-      - name: Update kubeconfig
-        run: |
-          aws eks update-kubeconfig --name $EKS_CLUSTER_NAME --region $AWS_REGION
-
-      - name: Deploy
-        run: |
-          kubectl apply -f k8s/ -n mern
-          kubectl rollout restart deployment sms-backend -n mern
-          kubectl rollout restart deployment sms-frontend -n mern
+    - name: Deploy to EC2
+      run: |
+        ssh ubuntu@your-ip "
+        docker pull yourusername/backend &&
+        docker stop backend || true &&
+        docker rm backend || true &&
+        docker run -d -p 5000:5000 --name backend yourusername/backend
+        "
